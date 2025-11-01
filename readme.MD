@@ -1,6 +1,15 @@
 # Global Loading State
 
-This package provides a simple and efficient way to manage global loading states in React applications. It enables the seamless triggering of loading states across any component, serving as a minimalist state management system.
+A lightweight, event-driven global loading state manager for React applications. Perfect for managing loading states across multiple components without prop drilling.
+
+## Features
+
+- ✨ Simple and lightweight
+- 🎣 React hooks API
+- 🔌 Event-driven architecture
+- 📦 TypeScript support
+- 🚀 Zero dependencies
+- ♿ Works with React 16.8+
 
 ## Installation
 
@@ -8,11 +17,13 @@ This package provides a simple and efficient way to manage global loading states
 npm install global-loading-state
 # or
 yarn add global-loading-state
+# or
+pnpm add global-loading-state
 ```
 
-## Usage
+## Quick Start
 
-### Using the GlobalLoading Hook
+### Using the Hook
 
 ```jsx
 import React from "react";
@@ -35,43 +46,67 @@ export default Button;
 
 ```jsx
 import React from "react";
-import { setGlobalLoading } from "global-loading-state";
+import { setGlobalLoading, startLoading, endLoading } from "global-loading-state";
 
 const DataFetcher = () => {
   const fetchData = async () => {
-    setGlobalLoading(true);
+    startLoading(); // or setGlobalLoading(true)
     try {
       await fetch("https://api.example.com/data");
     } finally {
-      setGlobalLoading(false);
+      endLoading(); // or setGlobalLoading(false)
     }
   };
 
   return <button onClick={fetchData}>Fetch Data</button>;
 };
+
+export default DataFetcher;
 ```
 
-## API
+## API Reference
 
-| Function                           | Description                                               |
-| ---------------------------------- | --------------------------------------------------------- |
-| `useGlobalLoading()`               | React hook that returns the current loading state boolean |
-| `setGlobalLoading(state: boolean)` | Function to set the global loading state                  |
+| Function | Type | Description |
+|----------|------|-------------|
+| `useGlobalLoading()` | Hook | Returns the current global loading state (boolean) |
+| `setGlobalLoading(state)` | Function | Set the global loading state to true or false |
+| `startLoading()` | Function | Convenience function to set loading state to true |
+| `endLoading()` | Function | Convenience function to set loading state to false |
+| `globalLoader` | EventEmitter | Direct access to the event emitter |
 
 ## Advanced Usage
 
-You can also directly access the event emitter for more complex scenarios:
+### Direct Event Emitter Access
 
 ```jsx
-import { eventEmitter } from "global-loading-state";
+import { globalLoader } from "global-loading-state";
 
-// Set loading state to true
-eventEmitter.emit("changeLoading", true);
+// Emit custom events
+globalLoader.emit("changeLoading", true);
+globalLoader.emit("changeLoading", false);
 
-// Set loading state to false
-eventEmitter.emit("changeLoading", false);
+// Subscribe to events
+const unsubscribe = globalLoader.subscribe("changeLoading", (isLoading) => {
+  console.log("Loading state changed:", isLoading);
+});
+
+// Cleanup
+unsubscribe();
+```
+
+### Multiple Loading States
+
+```jsx
+import { EventEmitter } from "global-loading-state";
+
+const customLoader = new EventEmitter();
+
+customLoader.emit("customEvent", "some-data");
+customLoader.subscribe("customEvent", (data) => {
+  console.log(data);
+});
 ```
 
 ## License
 
-MIT
+MIT © [Mahmoud Bahaa](https://github.com/mahmoudbahaa755)
